@@ -28,14 +28,60 @@ using System.Threading.Tasks;
 
 namespace pong {
     class Pong {
-        int width;
-        int height;
-        Paddle p1Paddle;
-        Paddle p2Paddle;
-        Ball ball;
-        Screen screen;
+        private int width;          // width of game
+        private int height;         // height of game
+        private Controls controls;  // keyboard controls
+        private Line line;          // Line dividing the 2 sides
+        private Score p1Score;      // Player 1 score
+        private Score p2Score;      // Player 2 score
+        private Paddle p1Paddle;    // Player 1 paddle
+        private Paddle p2Paddle;    // player 2 paddle
+        private Ball ball;          // ball
+        private Screen screen;      // Used to draw objects of type GameObject
+        private bool run;           // Is still playing flag
 
-        public void Start() {
+        public void Play() {
+            //
+            // Starts a game
+            //
+            StartGame();
+
+            //
+            // Listen to keyboard for keypresses
+            //
+            StartControls();
+
+            //
+            // Initilizes screen
+            // Draws paddles, ball, and scores
+            //
+            CreateGameObjects();
+
+            //
+            // Calculates ball path
+            // Bounces ball off paddles and top/bottom
+            // Detects goal
+            // Updates scores
+            //
+            PlayGame();
+
+            //
+            // Clears Console and stops listening to keyboard
+            //
+            EndGame();
+        }
+        private void StartGame() {
+            //
+            // Set playing flag to true
+            // 
+            run = true;
+        }
+        private void CreateGameObjects() {
+            //
+            // Clears Console
+            //
+            Console.Clear();
+
             //
             // Sets game width and height
             //
@@ -43,11 +89,22 @@ namespace pong {
             height = Console.WindowHeight;
 
             //
+            // Creates dividing line
+            //
+            line = new Line(width, height);
+
+            //
+            // Creates scoreboard
+            //
+            p1Score = new Score(width / 4 - 1, 2);
+            p2Score = new Score(3 * width / 4 - 1, 2);
+
+            //
             // Creates player 1 paddle
             //
             p1Paddle = new Paddle(1, height / 2 - 2);
             p2Paddle = new Paddle(width - 2, height / 2 - 2);
-            ball = new Ball(width/2, height/2);
+            ball = new Ball(width / 2, height / 2);
 
             //
             // Adds paddles to the screen and update
@@ -56,13 +113,17 @@ namespace pong {
             screen.Add(p1Paddle);
             screen.Add(p2Paddle);
             screen.Add(ball);
+            screen.Add(p1Score);
+            screen.Add(p2Score);
+            screen.Add(line);
             screen.Update();
-
+        }
+        private void StartControls() {
             //
             // When player 1 presses w/s move paddle up/down, respectively
             // When player 2 presses i/k move paddle up/down, respectively
             //
-            Controls controls = new Controls(ConsoleKey.W, ConsoleKey.S, ConsoleKey.I, ConsoleKey.K);
+            controls = new Controls(ConsoleKey.W, ConsoleKey.S, ConsoleKey.I, ConsoleKey.K, ConsoleKey.Q);
             controls.WhileDown(delegate(ConsoleKey key) {
                 if (key == ConsoleKey.W && p1Paddle.Y > 0) {
                     p1Paddle.Y -= 1;
@@ -72,20 +133,15 @@ namespace pong {
                     p2Paddle.Y -= 1;
                 } else if (key == ConsoleKey.K && p2Paddle.Y < height - 5) {
                     p2Paddle.Y += 1;
+                } else if (key == ConsoleKey.Q) {
+                    run = false;
                 }
 
                 screen.Update();
             });
-
-            //
-            // Animate ball
-            //
-            Thread animateBallThread = new Thread(AnimateBall);
-            animateBallThread.Start();
         }
-
-        private void AnimateBall() {
-            while (true) {
+        private void PlayGame() {
+            while (run) {
                 //
                 // Propel ball
                 //
@@ -105,13 +161,36 @@ namespace pong {
                 bool hitBottom = ball.Y >= height - 1;
 
                 //
+                // Contain ball within width and height
+                //
+                if (hitTop) ball.Y = 0;
+                if (hitBottom) ball.Y = height - 1;
+
+                //
+                // Bounce ball of top or bottom with same angle it hit with
+                //
+                if (hitTop || hitBottom) {
+                    ball.Rise *= -1;
+                }
+
+                //
                 // Reset ball if scored
                 //
                 if (hitSide && !hitPaddle) {
-                    ball.X = width / 2;
-                    ball.Y = height / 2;
-                    ball.Rise = 0;
-                    ball.Run = 2;
+                    ball.Reset();
+                }                
+                
+                //
+                // Update scores
+                // Update run so that ball moves towards the player who was scored on
+                //
+                if (hitRightSide && !hitP2Paddle) {
+                    p1Score.Number++;
+                }
+
+                if (hitLeftSide && !hitP1Paddle) {
+                    p2Score.Number++;
+                    ball.Run *= -1;
                 }
 
                 //
@@ -153,22 +232,16 @@ namespace pong {
                     ball.Run *= -1;
                 }
 
-                //
-                // Contain ball within width and height
-                //
-                if (hitTop) ball.Y = 0;
-                if (hitBottom) ball.Y = height - 1;
 
-                //
-                // Bounce ball of top or bottom with same angle it hit with
-                //
-                if (hitTop || hitBottom) {
-                    ball.Rise *= -1;
-                }
+
 
                 Thread.Sleep(40);
                 screen.Update();
             }
+        }
+        private void EndGame(){
+            Console.Clear();
+            controls.Stop();
         }
     }
 }

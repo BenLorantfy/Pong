@@ -26,15 +26,26 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace pong {
-    class Ball : Block{
+    class Ball : GameObject{
         public int Rise;
         public int Run;
+        private int initialX;
+        private int initialY;
         public Ball(int x, int y) : base(1, 1) {
+            initialX = x;
+            initialY = y;
             this.X = x;
             this.Y = y;
             Rise = 0;
             Run = 1;
             Shape[0, 0] = '█';
+        }
+
+        public void Reset(){
+            Rise = 0;
+            Run = 1;
+            X = initialX;
+            Y = initialY;
         }
     }
 }

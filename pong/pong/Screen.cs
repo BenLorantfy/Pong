@@ -30,19 +30,19 @@ namespace pong {
         int width;
         int height;
         static private char[,] consoleCharachters;
-        static private List<Block> blocks;
+        static private List<GameObject> gameObjects;
         static object updateLock;
 
         public Screen(int width, int height) {
             this.width = width;
             this.height = height;
             updateLock = new object();
-            blocks = new List<Block>();
+            gameObjects = new List<GameObject>();
             consoleCharachters = new char[width, height];
         }
 
-        public void Add(Block block) {
-            blocks.Add(block);
+        public void Add(GameObject gameObject) {
+            gameObjects.Add(gameObject);
         }
 
         public void Update(){
@@ -52,19 +52,19 @@ namespace pong {
                 //
                 // Loop through each block
                 //
-                foreach (Block block in blocks) {
+                foreach (GameObject gameObject in gameObjects) {
 
                     //
                     // Loop through each charachter in block
                     //
-                    char[,] shape = block.Shape;
+                    char[,] shape = gameObject.Shape;
                     for (int i = 0; i < shape.GetLength(0); i++) {
                         for (int j = 0; j < shape.GetLength(1); j++) {
                             //
                             // If not NULL or space, set charachter in newConsoleCharachters
                             //
                             if (shape[i, j] != 0 && shape[i, j] != ' ') {
-                                newConsoleCharachters[block.X + i, block.Y + j] = shape[i, j];
+                                newConsoleCharachters[gameObject.X + i, gameObject.Y + j] = shape[i, j];
                             }
                         }
                     }

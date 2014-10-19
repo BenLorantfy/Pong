@@ -26,7 +26,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace pong {
-    class Paddle : Block{
+    class Paddle : GameObject{
         public Paddle(int x, int y) : base(10, 10){
             this.X = x;
             this.Y = y;

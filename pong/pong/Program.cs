@@ -30,8 +30,7 @@ namespace pong {
     class Program {
 
         static void Main(string[] args) {
-            Pong pong = new Pong();
-            pong.Start();
+            new Pong().Play();
         }
 
     }

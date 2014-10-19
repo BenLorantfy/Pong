@@ -26,19 +26,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace pong {
-    abstract class Block {
+    abstract class GameObject {
         public int X { get; set; }
         public int Y { get; set; }
         protected int Width { get; private set; }
         protected int Height { get; private set; }
         public char[,] Shape { get; private set; }
 
-        protected Block(int width, int height) {
+        protected GameObject(int width, int height) {
             X = 0;
             Y = 0;
             this.Width = width;
             this.Height = height;
-            Shape = new char[Height, Width];
+            Shape = new char[Width, Height];
         }
     }
 }
