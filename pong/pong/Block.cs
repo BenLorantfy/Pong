@@ -26,13 +26,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace pong {
-    public class Pair<T1, T2> {
-        public T1 First { get; set; }
-        public T2 Second { get; set; }
+    abstract class Block {
+        public int X { get; set; }
+        public int Y { get; set; }
+        protected int Width { get; private set; }
+        protected int Height { get; private set; }
+        public char[,] Shape { get; private set; }
 
-        public Pair(T1 first, T2 second) {
-            First = first;
-            Second = second;
+        protected Block(int width, int height) {
+            X = 0;
+            Y = 0;
+            this.Width = width;
+            this.Height = height;
+            Shape = new char[Height, Width];
         }
     }
 }

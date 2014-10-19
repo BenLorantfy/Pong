@@ -26,13 +26,15 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace pong {
-    public class Pair<T1, T2> {
-        public T1 First { get; set; }
-        public T2 Second { get; set; }
-
-        public Pair(T1 first, T2 second) {
-            First = first;
-            Second = second;
+    class Paddle : Block{
+        public Paddle(int x, int y) : base(10, 10){
+            this.X = x;
+            this.Y = y;
+            Shape[0, 0] = '█';
+            Shape[0, 1] = '█';
+            Shape[0, 2] = '█';
+            Shape[0, 3] = '█';
+            Shape[0, 4] = '█';
         }
     }
 }
